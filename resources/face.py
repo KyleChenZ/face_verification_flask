@@ -6,6 +6,7 @@ from flask import redirect, jsonify, request
 import face_recognition
 import json
 import numpy as np
+import PIL
 
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -14,10 +15,39 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def load_image_file(file, mode='RGB'):
+    """
+    Loads an image file (.jpg, .png, etc) into a numpy array
 
-def detect_faces_in_image(image_file):
+    :param file: image file name or file object to load
+    :param mode: format to convert the image to. Only 'RGB' (8-bit RGB, 3 channels) and 'L' (black and white) are supported.
+    :return: image contents as numpy array
+    """
+    im = PIL.Image.open(file)
+    width, height = im.size
+    try:
+        #rotate accordingly
+        im = PIL.ImageOps.exif_transpose(im)   
+    except:
+        pass
+
+    if width > 4000 :
+        new_width = 2000
+        wpercent = (new_width/float(im.size[0]))
+        hsize = int((float(im.size[1])*float(wpercent)))
+        im = im.resize((new_width,hsize), PIL.Image.ANTIALIAS)
+    elif height > 4000:
+        new_height = 2000
+        hpercent = (new_height/float(im.size[0]))
+        wsize = int((float(im.size[1])*float(hpercent)))
+        im = im.resize((new_height,wsize), PIL.Image.ANTIALIAS)
+    if mode:
+        im = im.convert(mode)
+    return np.array(im)
+
+def detect_faces_in_image(img):
     # Load the uploaded image file
-    img = face_recognition.load_image_file(image_file)
+    #img = face_recognition.load_image_file(image_file)
     # Get face encodings for any faces in the uploaded image
     unknown_face_encodings = face_recognition.face_encodings(img)
 
@@ -58,7 +88,8 @@ class Face(Resource):
 
         face_detected=False
         if file and allowed_file(file.filename):
-            result = detect_faces_in_image(file)
+            image = load_image_file(file)
+            result = detect_faces_in_image(image)
             face_detected = result['face_found_in_image']
         
         if face_detected and 'face_vectors' in result:

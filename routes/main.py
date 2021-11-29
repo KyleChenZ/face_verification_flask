@@ -24,11 +24,11 @@ def profile():
     else:
         user_data = UserModel.find_by_id(current_user.id).json()
         data = []
-        print(user_data)
+        #print(user_data)
         for f in user_data['faces']:
             data.append({'id':f['id'],'date_created':f['date_created']})
         count = len(data)
-        print(data)
+        #print(data)
         return render_template('face_list.html', name=current_user.name, data=data, count=count)
     
     #return render_template('profile.html', name=current_user.name)
