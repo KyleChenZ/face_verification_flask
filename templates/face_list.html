@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .upload_picture{
+        font-size: 1.2em;
+        text-align-last: center;
+    }
+</style>
+<script>
+    var face_result
+    function delete_id(fid){
+        //alert(fid);
+        $.ajax({
+                url: window.location.origin + '/face/'+fid.toString(),
+                type: 'DELETE',  // http method
+                success: function (data, status, xhr) {
+                    alert('Face ID deleted successfully');
+                    location.reload();
+                    //face_result=data;
+                    //console.log(face_result.face_vectors,face_result.id,face_user_id);
+                },
+                error: function (jqXhr, textStatus, errorMessage) {
+                    console.log(jqXhr);
+                    if (jqXhr.responseJSON.message){
+                        alert(jqXhr.responseJSON.message);
+                    }
+                    else{
+                        alert(errorMessage);
+                    }
+                },
+                processData: false,
+                contentType: false
+            });
+    }
+</script>
+
+
+<h1 class="title">
+    Welcome, {{ name }}!
+</h1>
+<form action="/face_id">
+    <input type="submit" value="Add face id"/>
+</form>
+
+{% if count %}
+<ul style="margin:50px">
+<!-- For loop logic of jinja template -->
+{%for i in range(0, count)%}
+  
+    <li><div>face id {{i+1}}</div>  {{data[i]['date_created']}} <button onclick="delete_id({{data[i]['id']}});">delete</button></li>
+{%endfor%}
+  
+</ul>
+{%endif%}
+{% endblock %}

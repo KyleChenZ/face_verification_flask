@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+    $(document).ready(function() {
+        $("form#upload_data").submit(function(e){
+            //alert(window.location.origin + '/face')
+            e.preventDefault();
+            var formData = new FormData(this);
+            //alert(formData);
+            $.ajax({
+                url: window.location.origin + '/verify_face',
+                type: 'POST',  // http method
+                data: formData,  // data to submit
+                success: function (data, status, xhr) {
+                    face_result=data;
+                    if(face_result.match === true){
+                        alert('match!');
+                    }
+                    else{
+                        alert('not match');
+                    }
+                    //console.log(face_result.face_vectors,face_result.id,face_user_id);
+                },
+                error: function (jqXhr, textStatus, errorMessage) {
+                    console.log(jqXhr);
+                    if (jqXhr.responseJSON.message){
+                        alert(jqXhr.responseJSON.message);
+                    }
+                    else{
+                        alert(errorMessage);
+                    }
+                },
+                processData: false,
+                contentType: false
+            });
+            //alert(window.location.origin+ '/face');
+            $('form#upload_data')[0].reset();
+            return false;
+        });
+    });
+
+</script>
+
+    <!doctype html>
+    <title>Face Verification</title>
+    <h1>Upload a picture and see if it's a picture of {{name}}</h1>
+    <form action="#" id="upload_data" class="upload_picture" enctype="multipart/form-data">
+        <input type="file" accept="image/*" capture="camera" name="image"  required/>
+        <input type="submit">
+    </form>
+
+    
+{% endblock %}

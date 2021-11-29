@@ -1,0 +1,9 @@
+flask
+Flask-JWT-Extended
+Flask-RESTful
+Flask-SQLAlchemy
+setuptools==59.2.0
+numpy
+Pillow
+cmake
+face_recognition

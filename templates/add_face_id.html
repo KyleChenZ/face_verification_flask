@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .upload_picture{
+        font-size: 1.2em;
+        text-align-last: center;
+    }
+</style>
+<script>
+    var face_result
+    //alert(window.location.origin + '/face');
+    $(document).ready(function() {
+        $("form#upload_data").submit(function(e){
+            //alert(window.location.origin + '/face')
+            e.preventDefault();
+            var formData = new FormData(this);
+            //alert(formData);
+            $.ajax({
+                url: window.location.origin + '/face',
+                type: 'POST',  // http method
+                data: formData,  // data to submit
+                success: function (data, status, xhr) {
+                    alert('Face ID added successfully');
+                    face_result=data;
+                    //console.log(face_result.face_vectors,face_result.id,face_user_id);
+                },
+                error: function (jqXhr, textStatus, errorMessage) {
+                    console.log(jqXhr);
+                    if (jqXhr.responseJSON.message){
+                        alert(jqXhr.responseJSON.message);
+                    }
+                    else{
+                        alert(errorMessage);
+                    }
+                },
+                processData: false,
+                contentType: false
+            });
+            //alert(window.location.origin+ '/face');
+            $('form#upload_data')[0].reset();
+            return false;
+        });
+    });
+
+</script>
+
+{% if allowed %}
+
+<form action="#" id="upload_data" class="upload_picture" enctype="multipart/form-data">
+    <input type="file" accept="image/*" capture="camera" name="image"  required/>
+    <input type="submit" value="Submit"/>
+</form>
+{% endif %}
+{% if not allowed %}
+<h1 class="title">
+    Your reach the maximum number (3) of face IDs allowed. Please delete a few face id and try again
+</h1>
+{% endif %}
+{% endblock %}
