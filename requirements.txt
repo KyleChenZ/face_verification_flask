@@ -2,6 +2,7 @@ flask
 Flask-JWT-Extended
 Flask-RESTful
 Flask-SQLAlchemy
+Flask-Login
 setuptools==59.2.0
 numpy
 Pillow
